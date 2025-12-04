@@ -31,7 +31,13 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+Vérifier la conformité avec les principes de la constitution:
+
+- [ ] **Clean Architecture**: La fonctionnalité respecte-t-elle la séparation en couches (Présentation → Application → Domain → Infrastructure)?
+- [ ] **Stack Technologique**: Utilise-t-on Next.js 15+ (frontend) et FastAPI 0.115+ (backend)? PostgreSQL 16+ et Redis 7.4+?
+- [ ] **Modularité**: La fonctionnalité est-elle isolée dans un module ou service indépendant?
+- [ ] **Tests**: Des tests unitaires et d'intégration sont-ils prévus? Les APIs externes seront-elles mockées?
+- [ ] **Performance**: Les opérations I/O utilisent-elles async/await? Les tâches longues sont-elles en arrière-plan?
 
 ## Project Structure
 
