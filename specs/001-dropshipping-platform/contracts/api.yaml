@@ -1,0 +1,382 @@
+openapi: 3.0.3
+info:
+  title: Plateforme Dropshipping Automatisée API
+  version: 1.0.0
+  description: API pour la gestion automatisée de produits dropshipping
+
+servers:
+  - url: http://localhost:8000
+    description: Développement local
+  - url: https://api.dropshipping.example.com
+    description: Production
+
+paths:
+  /scraping/start:
+    post:
+      summary: Lance le scraping des publicités Facebook et TikTok
+      tags:
+        - Scraping
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                facebook_max:
+                  type: integer
+                  default: 500
+                  description: Nombre maximum d'ads Facebook à scraper
+                tiktok_max:
+                  type: integer
+                  default: 500
+                  description: Nombre maximum de pages TikTok à scraper
+      responses:
+        '200':
+          description: Scraping lancé en arrière-plan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: started
+                  message:
+                    type: string
+                  facebook_max:
+                    type: integer
+                  tiktok_max:
+                    type: integer
+
+  /scraping/status:
+    get:
+      summary: Récupère le statut actuel du scraping
+      tags:
+        - Scraping
+      responses:
+        '200':
+          description: Statut du scraping
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_ads:
+                    type: integer
+                  facebook_ads:
+                    type: integer
+                  tiktok_ads:
+                    type: integer
+
+  /scoring/calculate:
+    post:
+      summary: Lance le calcul des scores pour toutes les ads non scorées
+      tags:
+        - Scoring
+      responses:
+        '200':
+          description: Top 5 produits identifiés
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  top_5_products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        ad_id:
+                          type: integer
+                        platform:
+                          type: string
+                        score:
+                          type: number
+                        ad_url:
+                          type: string
+                  message:
+                    type: string
+
+  /scoring/top-products:
+    get:
+      summary: Récupère les N meilleurs produits déjà scorés
+      tags:
+        - Scoring
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 5
+      responses:
+        '200':
+          description: Liste des meilleurs produits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    product_id:
+                      type: integer
+                    platform:
+                      type: string
+                    score:
+                      type: number
+                    ad_url:
+                      type: string
+                    page_name:
+                      type: string
+                    caption:
+                      type: string
+
+  /creatives/generate/{product_id}:
+    post:
+      summary: Lance la génération des 4 créatives pour un produit
+      tags:
+        - Creatives
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Génération lancée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: started
+                  message:
+                    type: string
+                  product_url:
+                    type: string
+        '404':
+          description: Produit introuvable
+        '400':
+          description: Aucune URL produit disponible
+
+  /creatives/status/{product_id}:
+    get:
+      summary: Récupère le statut de toutes les créatives d'un produit
+      tags:
+        - Creatives
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des statuts de créatives
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    creative_id:
+                      type: integer
+                    video_type:
+                      type: string
+                    status:
+                      type: string
+                    progress:
+                      type: integer
+                    download_url:
+                      type: string
+
+  /campaigns/launch-for-product/{product_id}:
+    post:
+      summary: Lance automatiquement les campagnes Meta et/ou TikTok pour un produit
+      tags:
+        - Campaigns
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                platform:
+                  type: string
+                  enum: [meta, tiktok, both]
+                  default: both
+                daily_budget:
+                  type: integer
+                  default: 5000
+                  description: Budget quotidien en centimes
+      responses:
+        '200':
+          description: Campagnes créées
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  product_id:
+                    type: integer
+                  product_name:
+                    type: string
+                  campaigns:
+                    type: object
+        '404':
+          description: Produit introuvable
+        '400':
+          description: Aucune créative prête
+
+  /campaigns/activate/{campaign_id}:
+    post:
+      summary: Active une campagne créée (passe de PAUSED à ACTIVE)
+      tags:
+        - Campaigns
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Campagne activée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: activated
+                  campaign_id:
+                    type: integer
+                  platform:
+                    type: string
+        '404':
+          description: Campagne introuvable
+        '500':
+          description: Erreur lors de l'activation
+
+  /webhooks/whatsapp:
+    get:
+      summary: Vérification du webhook par Meta
+      tags:
+        - Webhooks
+      parameters:
+        - name: hub.mode
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: hub.verify_token
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: hub.challenge
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Challenge retourné pour vérification
+          content:
+            text/plain:
+              schema:
+                type: string
+        '403':
+          description: Verification failed
+
+    post:
+      summary: Réception des messages WhatsApp entrants
+      tags:
+        - Webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                object:
+                  type: string
+                entry:
+                  type: array
+      responses:
+        '200':
+          description: Message traité
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+
+  /api/orders:
+    post:
+      summary: Soumet une commande depuis une landing page
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - fullName
+                - phone
+                - address
+                - city
+              properties:
+                productId:
+                  type: integer
+                productName:
+                  type: string
+                fullName:
+                  type: string
+                phone:
+                  type: string
+                address:
+                  type: string
+                city:
+                  type: string
+                quantity:
+                  type: integer
+                  default: 1
+      responses:
+        '200':
+          description: Commande enregistrée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: integer
+                  estimatedValue:
+                    type: number
+                  message:
+                    type: string
+        '400':
+          description: Données invalides
+

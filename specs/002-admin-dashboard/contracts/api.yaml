@@ -1,0 +1,655 @@
+openapi: 3.0.3
+info:
+  title: Admin Dashboard API
+  description: API REST pour l'application d'administration de la plateforme dropshipping
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/admin
+    description: Serveur de développement
+  - url: https://api.dropshipping.local/admin
+    description: Serveur de production
+
+tags:
+  - name: auth
+    description: Authentification admin
+  - name: dashboard
+    description: Métriques dashboard
+  - name: products
+    description: Gestion des produits
+  - name: campaigns
+    description: Gestion des campagnes
+  - name: creatives
+    description: Gestion des créatives
+  - name: orders
+    description: Gestion des commandes
+  - name: actions
+    description: Actions de pilotage système
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Connexion administrateur
+      description: Authentifie un administrateur et retourne un token JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: admin@dropshipping.local
+                password:
+                  type: string
+                  format: password
+                  example: admin123
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Token JWT pour authentification
+                  expires_at:
+                    type: string
+                    format: date-time
+                    description: Date d'expiration du token
+                  admin:
+                    $ref: '#/components/schemas/AdminUser'
+        '401':
+          description: Identifiants invalides
+        '403':
+          description: Compte désactivé
+
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      summary: Déconnexion administrateur
+      description: Révoque la session actuelle
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Déconnexion réussie
+        '401':
+          description: Non authentifié
+
+  /auth/me:
+    get:
+      tags:
+        - auth
+      summary: Informations administrateur actuel
+      description: Retourne les informations de l'administrateur authentifié
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Informations administrateur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUser'
+        '401':
+          description: Non authentifié
+
+  /dashboard/stats:
+    get:
+      tags:
+        - dashboard
+      summary: Métriques dashboard
+      description: Retourne les métriques principales du dashboard
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Métriques dashboard
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+        '401':
+          description: Non authentifié
+
+  /products:
+    get:
+      tags:
+        - products
+      summary: Liste des produits
+      description: Retourne la liste des produits scrapés avec filtres et pagination
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [facebook, tiktok]
+          description: Filtrer par plateforme
+        - name: scored
+          in: query
+          schema:
+            type: boolean
+          description: Filtrer par statut de scoring
+        - name: min_score
+          in: query
+          schema:
+            type: number
+            format: float
+          description: Score minimum
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Numéro de page
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 100
+          description: Nombre d'éléments par page
+      responses:
+        '200':
+          description: Liste des produits
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+        '401':
+          description: Non authentifié
+
+  /campaigns:
+    get:
+      tags:
+        - campaigns
+      summary: Liste des campagnes
+      description: Retourne la liste des campagnes avec filtres
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [paused, active, completed]
+          description: Filtrer par statut
+        - name: platform
+          in: query
+          schema:
+            type: string
+            enum: [meta, tiktok]
+          description: Filtrer par plateforme
+      responses:
+        '200':
+          description: Liste des campagnes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Campaign'
+                  total:
+                    type: integer
+        '401':
+          description: Non authentifié
+
+  /campaigns/{campaign_id}/activate:
+    post:
+      tags:
+        - campaigns
+      summary: Activer une campagne
+      description: Active une campagne en pause
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Campagne activée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+        '400':
+          description: Campagne déjà active ou erreur
+        '401':
+          description: Non authentifié
+        '404':
+          description: Campagne non trouvée
+
+  /campaigns/{campaign_id}/deactivate:
+    post:
+      tags:
+        - campaigns
+      summary: Désactiver une campagne
+      description: Met en pause une campagne active
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Campagne désactivée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Campaign'
+        '400':
+          description: Campagne déjà en pause ou erreur
+        '401':
+          description: Non authentifié
+        '404':
+          description: Campagne non trouvée
+
+  /creatives:
+    get:
+      tags:
+        - creatives
+      summary: Liste des créatives
+      description: Retourne la liste des créatives générées
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: product_id
+          in: query
+          schema:
+            type: integer
+          description: Filtrer par produit
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [queued, processing, completed, failed]
+          description: Filtrer par statut
+      responses:
+        '200':
+          description: Liste des créatives
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Creative'
+                  total:
+                    type: integer
+        '401':
+          description: Non authentifié
+
+  /orders:
+    get:
+      tags:
+        - orders
+      summary: Liste des commandes
+      description: Retourne la liste des commandes avec filtres
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, confirmed, shipped, delivered]
+          description: Filtrer par statut
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Date de début
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Date de fin
+      responses:
+        '200':
+          description: Liste des commandes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+                  total:
+                    type: integer
+        '401':
+          description: Non authentifié
+
+  /orders/{order_id}/status:
+    patch:
+      tags:
+        - orders
+      summary: Mettre à jour le statut d'une commande
+      description: Met à jour le statut d'une commande
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [pending, confirmed, shipped, delivered]
+      responses:
+        '200':
+          description: Statut mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Statut invalide ou erreur
+        '401':
+          description: Non authentifié
+        '404':
+          description: Commande non trouvée
+
+  /actions/scraping/start:
+    post:
+      tags:
+        - actions
+      summary: Démarrer le scraping
+      description: Déclenche manuellement le scraping des publicités
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Scraping démarré
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    description: Identifiant du job de scraping
+                  status:
+                    type: string
+                    enum: [queued, started]
+        '401':
+          description: Non authentifié
+        '409':
+          description: Scraping déjà en cours
+
+  /actions/scraping/status:
+    get:
+      tags:
+        - actions
+      summary: Statut du scraping
+      description: Retourne le statut et le progrès du scraping en cours
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Statut du scraping
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [idle, running, completed, failed]
+                  progress:
+                    type: integer
+                    minimum: 0
+                    maximum: 100
+                    description: Pourcentage de progression
+                  ads_scraped:
+                    type: integer
+                    description: Nombre d'ads scrapées
+        '401':
+          description: Non authentifié
+
+  /actions/scoring/calculate:
+    post:
+      tags:
+        - actions
+      summary: Calculer les scores
+      description: Déclenche manuellement le calcul des scores pour les produits non scorés
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Calcul des scores démarré
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    description: Identifiant du job de scoring
+                  status:
+                    type: string
+                    enum: [queued, started]
+        '401':
+          description: Non authentifié
+
+  /actions/creatives/generate/{product_id}:
+    post:
+      tags:
+        - actions
+      summary: Générer les créatives pour un produit
+      description: Déclenche manuellement la génération de créatives pour un produit
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: product_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Génération de créatives démarrée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    description: Identifiant du job de génération
+                  status:
+                    type: string
+                    enum: [queued, started]
+        '401':
+          description: Non authentifié
+        '404':
+          description: Produit non trouvé
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        last_login_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    DashboardStats:
+      type: object
+      properties:
+        total_products:
+          type: integer
+          description: Nombre total de produits scrapés
+        scored_products:
+          type: integer
+          description: Nombre de produits scorés
+        top_5_products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+          maxItems: 5
+        active_campaigns:
+          type: integer
+          description: Nombre de campagnes actives
+        pending_orders:
+          type: integer
+          description: Nombre de commandes en attente
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        platform:
+          type: string
+          enum: [facebook, tiktok]
+        ad_id:
+          type: string
+        score:
+          type: number
+          format: float
+          nullable: true
+        scraped_at:
+          type: string
+          format: date-time
+        scored:
+          type: boolean
+        selected_for_campaign:
+          type: boolean
+
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        platform:
+          type: string
+          enum: [meta, tiktok]
+        campaign_name:
+          type: string
+        status:
+          type: string
+          enum: [paused, active, completed]
+        daily_budget:
+          type: integer
+          description: Budget quotidien en centimes
+        created_at:
+          type: string
+          format: date-time
+        activated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Creative:
+      type: object
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        video_type:
+          type: string
+          enum: [ugc, problem_solution, short_hook, carousel]
+        status:
+          type: string
+          enum: [queued, processing, completed, failed]
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        product_id:
+          type: integer
+        product_name:
+          type: string
+        full_name:
+          type: string
+        phone:
+          type: string
+        quantity:
+          type: integer
+        status:
+          type: string
+          enum: [pending, confirmed, shipped, delivered]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+

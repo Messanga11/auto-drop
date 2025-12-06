@@ -1,0 +1,174 @@
+{
+  "typography": {
+    "family": "Inter",
+    "weights": {
+      "extraLight": 200,
+      "light": 300,
+      "regular": 400,
+      "medium": 500
+    },
+    "titles": {
+      "xl": {"size": 88, "weight": "extraLight", "tracking": -2},
+      "lg": {"size": 54, "weight": "light"},
+      "md": {"size": 32, "weight": "regular"},
+      "sm": {"size": 20, "weight": "medium"}
+    },
+    "body": {
+      "regular": {"size": 18, "weight": "light"},
+      "small": {"size": 14, "weight": "regular"}
+    }
+  },
+
+  "colors": {
+    "primary": "#FF7335",
+    "primaryGradient": {
+      "from": "#FF6A00",
+      "to": "#FF3B2E",
+      "direction": "diagonal"
+    },
+    "background": {
+      "light": "#F5F6F7",
+      "dark": "#0C0C0C",
+      "card": "rgba(255,255,255,0.15)",
+      "glass": "rgba(255,255,255,0.20)",
+      "glassDark": "rgba(0,0,0,0.25)"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "rgba(255,255,255,0.75)",
+      "dark": "#111111",
+      "muted": "rgba(0,0,0,0.5)"
+    },
+    "accent": {
+      "blue": "#9DB5C8",
+      "green": "#7FE0B3",
+      "red": "#FF6E5E",
+      "beige": "#C7A488",
+      "grey": "#8F9AA3",
+      "black": "#000000"
+    }
+  },
+
+  "blur": {
+    "glassStrong": 45,
+    "card": 25,
+    "backgroundFog": 80
+  },
+
+  "radii": {
+    "xs": 8,
+    "sm": 14,
+    "md": 22,
+    "lg": 32,
+    "xl": 48,
+    "xxl": 60,
+    "full": 999
+  },
+
+  "shadows": {
+    "soft": "0 4px 32px rgba(0,0,0,0.25)",
+    "strong": "0 8px 48px rgba(0,0,0,0.35)",
+    "innerGlow": "inset 0 0 32px rgba(255,255,255,0.1)"
+  },
+
+  "layout": {
+    "padding": {
+      "screen": 48,
+      "section": 32,
+      "card": 24,
+      "component": 16
+    },
+    "maxWidth": 1600,
+    "gridGap": 32
+  },
+
+  "navbar": {
+    "height": 68,
+    "blur": 25,
+    "background": "rgba(0,0,0,0.30)",
+    "avatarSize": 42,
+    "iconStyle": {
+      "stroke": 1.6,
+      "color": "#FFFFFF"
+    }
+  },
+
+  "buttons": {
+    "default": {
+      "radius": 30,
+      "paddingX": 22,
+      "paddingY": 12,
+      "fontWeight": 400,
+      "background": "rgba(255,255,255,0.15)",
+      "hoverBackground": "rgba(255,255,255,0.25)"
+    },
+    "tag": {
+      "radius": 20,
+      "paddingX": 16,
+      "paddingY": 6,
+      "inactiveBg": "rgba(255,255,255,0.12)",
+      "activeBg": "#000000",
+      "activeText": "#FFFFFF"
+    }
+  },
+
+  "cards": {
+    "glass": {
+      "background": "rgba(255,255,255,0.20)",
+      "blur": 40,
+      "radius": 32,
+      "shadow": "0 8px 48px rgba(0,0,0,0.3)"
+    },
+    "stat": {
+      "radius": 28,
+      "padding": 20,
+      "background": "rgba(0,0,0,0.35)"
+    }
+  },
+
+  "timeline": {
+    "nodeSize": 60,
+    "lineThickness": 3,
+    "lineColor": "rgba(255,255,255,0.4)",
+    "nodeActive": {
+      "background": "#000000",
+      "iconColor": "#FFFFFF"
+    },
+    "nodeInactive": {
+      "background": "rgba(255,255,255,0.15)",
+      "iconColor": "#FFFFFF"
+    }
+  },
+
+  "charts": {
+    "bar": {
+      "barWidth": 8,
+      "radius": 20,
+      "activeColor": "#FF6A4A",
+      "inactiveColor": "rgba(255,255,255,0.4)"
+    }
+  },
+
+  "icons": {
+    "style": "minimal-line",
+    "strokeWidth": 1.7,
+    "color": "#FFFFFF"
+  },
+
+  "images": {
+    "style": "futuristic_high_contrast",
+    "subjects": ["android", "female_robot", "cyborg", "neon_portrait"],
+    "lighting": "hard rim light, neon orange, cold blue contrast",
+    "composition": "centered, ultra-clean background"
+  },
+
+  "effects": {
+    "gradientOverlay": {
+      "enabled": true,
+      "colors": ["#FF6A00", "#FF3E3E", "#000000"],
+      "opacity": 0.55,
+      "blendMode": "overlay"
+    },
+    "frostedGlassSections": true
+  }
+}

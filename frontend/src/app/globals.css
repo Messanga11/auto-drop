@@ -1,0 +1,280 @@
+/* Import Inter font - must be before @tailwind */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Legacy variables for backward compatibility */
+  --background: #0C0C0C;
+  --foreground: #FFFFFF;
+
+  /* Design System Color Tokens */
+  --color-primary: #FF7335;
+  --color-primary-gradient-from: #FF6A00;
+  --color-primary-gradient-to: #FF3B2E;
+  
+  --color-background-light: #F5F6F7;
+  --color-background-dark: #0C0C0C;
+  --color-background-card: rgba(255,255,255,0.15);
+  --color-background-glass: rgba(255,255,255,0.20);
+  --color-background-glass-dark: rgba(0,0,0,0.25);
+  
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: rgba(255,255,255,0.75);
+  --color-text-dark: #111111;
+  --color-text-muted: rgba(0,0,0,0.5);
+  
+  --color-accent-blue: #9DB5C8;
+  --color-accent-green: #7FE0B3;
+  --color-accent-red: #FF6E5E;
+  --color-accent-beige: #C7A488;
+  --color-accent-grey: #8F9AA3;
+  --color-accent-black: #000000;
+
+  /* Design System Typography Tokens */
+  --font-family: 'Inter', sans-serif;
+  --font-weight-extra-light: 200;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  
+  --font-size-title-xl: 88px;
+  --font-size-title-lg: 54px;
+  --font-size-title-md: 32px;
+  --font-size-title-sm: 20px;
+  --font-size-body-regular: 18px;
+  --font-size-body-small: 14px;
+  
+  --letter-spacing-title-xl: -2px;
+
+  /* Design System Spacing Tokens */
+  --spacing-screen: 48px;
+  --spacing-section: 32px;
+  --spacing-card: 24px;
+  --spacing-component: 16px;
+  --spacing-grid-gap: 32px;
+  --max-width-container: 1600px;
+
+  /* Design System Border Radius Tokens */
+  --radius-xs: 8px;
+  --radius-sm: 14px;
+  --radius-md: 22px;
+  --radius-lg: 32px;
+  --radius-xl: 48px;
+  --radius-xxl: 60px;
+  --radius-full: 999px;
+
+  /* Design System Shadow Tokens */
+  --shadow-soft: 0 4px 32px rgba(0,0,0,0.25);
+  --shadow-strong: 0 8px 48px rgba(0,0,0,0.35);
+  --shadow-inner-glow: inset 0 0 32px rgba(255,255,255,0.1);
+
+  /* Design System Blur Tokens */
+  --blur-glass-strong: 45px;
+  --blur-card: 25px;
+  --blur-background-fog: 80px;
+}
+
+body {
+  color: var(--color-text-primary);
+  background: var(--color-background-dark);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-light);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Animated background layers */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(255, 115, 53, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 107, 0, 0.18) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(255, 59, 46, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 60% 40%, rgba(255, 115, 53, 0.12) 0%, transparent 40%);
+  animation: backgroundMove 30s ease-in-out infinite;
+  will-change: transform;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    linear-gradient(135deg, rgba(255, 107, 0, 0.08) 0%, transparent 50%),
+    linear-gradient(225deg, rgba(255, 59, 46, 0.08) 0%, transparent 50%);
+  animation: gradientRotate 40s linear infinite;
+  will-change: transform;
+}
+
+@keyframes backgroundMove {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(5%, 3%) scale(1.05);
+  }
+  50% {
+    transform: translate(-3%, 5%) scale(1.1);
+  }
+  75% {
+    transform: translate(3%, -2%) scale(1.05);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes gradientRotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.6;
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: rotate(180deg) scale(1);
+    opacity: 0.6;
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 0.6;
+  }
+}
+
+/* Design System Component Classes */
+@layer components {
+  /* Button Default Variant */
+  .btn-default {
+    border-radius: 30px;
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-weight: 400;
+    background: rgba(255,255,255,0.15);
+    transition: background-color 0.2s;
+  }
+  
+  .btn-default:hover:not(:disabled) {
+    background: rgba(255,255,255,0.25);
+  }
+
+  /* Button Tag Variant */
+  .btn-tag {
+    border-radius: 20px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-weight: 400;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  
+  .btn-tag-inactive {
+    background: rgba(255,255,255,0.12);
+    color: var(--color-text-primary);
+  }
+  
+  .btn-tag-active {
+    background: #000000;
+    color: #FFFFFF;
+  }
+
+  /* Badge Tag Variant */
+  .badge-tag {
+    border-radius: 20px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-weight: 400;
+  }
+  
+  .badge-tag-inactive {
+    background: rgba(255,255,255,0.12);
+    color: var(--color-text-primary);
+  }
+  
+  .badge-tag-active {
+    background: #000000;
+    color: #FFFFFF;
+  }
+
+  /* Card Stat Variant */
+  .card-stat {
+    border-radius: 28px;
+    padding: 20px;
+    background: rgba(0,0,0,0.35);
+  }
+
+  /* Navbar */
+  .navbar-height {
+    height: 68px;
+  }
+  
+  .navbar-avatar {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* Glass card utility */
+@layer utilities {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 1;
+  }
+  
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.20);
+    backdrop-filter: blur(45px);
+    -webkit-backdrop-filter: blur(45px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+    z-index: 1;
+  }
+  
+  .gradient-overlay-enabled {
+    position: relative;
+  }
+  
+  .gradient-overlay-enabled::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #FF6A00, #FF3E3E, #000000);
+    opacity: 0.55;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: -1;
+  }
+}

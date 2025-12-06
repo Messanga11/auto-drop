@@ -1,0 +1,35 @@
+# auto-drop Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2025-12-04
+
+## Active Technologies
+- Python 3.11+ (backend), TypeScript 5.6+ (frontend), Node.js 20+ + FastAPI 0.115.0+, Next.js 15.1.0+, React 19+, SQLAlchemy 2.0 (async), WebSocket (websockets ou fastapi-websocket), JWT pour sessions, bcrypt pour hashage mots de passe (002-admin-dashboard)
+- PostgreSQL 16+ (entités admin: AdminUser, AdminSession, AdminAction), SQLite en développemen (002-admin-dashboard)
+- PostgreSQL 16+ (production), SQLite (développement), Redis 7.4+ (cache) (003-code-refactoring)
+- N/A (design system frontend uniquement) (004-design-system)
+
+- Python 3.11+ (backend), TypeScript 5.6+ (frontend), Node.js 20+ + FastAPI 0.115.0+, Next.js 15.1.0+, React 19+, SQLAlchemy 2.0 (async), Redis 7.4+, Ollama (001-dropshipping-platform)
+
+## Project Structure
+
+```text
+src/
+tests/
+```
+
+## Commands
+
+cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLOGIES] pytest [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLOGIES] ruff check .
+
+## Code Style
+
+Python 3.11+ (backend), TypeScript 5.6+ (frontend), Node.js 20+: Follow standard conventions
+
+## Recent Changes
+- 004-design-system: Added N/A (design system frontend uniquement)
+- 003-code-refactoring: Added PostgreSQL 16+ (production), SQLite (développement), Redis 7.4+ (cache)
+- 002-admin-dashboard: Added Python 3.11+ (backend), TypeScript 5.6+ (frontend), Node.js 20+ + FastAPI 0.115.0+, Next.js 15.1.0+, React 19+, SQLAlchemy 2.0 (async), WebSocket (websockets ou fastapi-websocket), JWT pour sessions, bcrypt pour hashage mots de passe
+
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->
